@@ -26,6 +26,7 @@
 #include <packager/media/formats/mp4/mp4_media_parser.h>
 #include <packager/media/formats/webm/webm_media_parser.h>
 #include <packager/media/formats/webvtt/webvtt_parser.h>
+#include <packager/media/formats/ass/ass_parser.h>
 #include <packager/media/formats/wvm/wvm_media_parser.h>
 
 namespace {
@@ -208,6 +209,9 @@ Status Demuxer::InitializeParser() {
       break;
     case CONTAINER_WEBVTT:
       parser_.reset(new WebVttParser());
+      break;
+    case CONTAINER_ASS:
+      parser_.reset(new AssParser());
       break;
     case CONTAINER_UNKNOWN: {
       const int64_t kDumpSizeLimit = 512;

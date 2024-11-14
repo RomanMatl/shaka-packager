@@ -9,6 +9,8 @@ add_library(ass STATIC
   ass_generator.h
   ass_muxer.cc
   ass_muxer.h
+  ass_parser.cc
+  ass_parser.h
   ass_to_mp4_handler.cc
   ass_to_mp4_handler.h
   )
