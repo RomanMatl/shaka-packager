@@ -8,6 +8,7 @@
 add_subdirectory(dvb)
 add_subdirectory(packed_audio)
 add_subdirectory(ttml)
+add_subdirectory(ass)
 add_subdirectory(mp4)
 add_subdirectory(mp2t)
 add_subdirectory(webm)

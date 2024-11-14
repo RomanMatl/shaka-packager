@@ -28,6 +28,7 @@
 #include <packager/media/base/language_utils.h>
 #include <packager/media/base/muxer.h>
 #include <packager/media/base/muxer_util.h>
+#include <packager/media/base/text_muxer.h>
 #include <packager/media/chunking/chunking_handler.h>
 #include <packager/media/chunking/cue_alignment_handler.h>
 #include <packager/media/chunking/text_chunker.h>

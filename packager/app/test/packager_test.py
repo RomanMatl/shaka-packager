@@ -411,7 +411,7 @@ class PackagerAppTest(unittest.TestCase):
       stream.Append('dash_label', dash_label)
 
     requires_init_segment = segmented and base_ext not in [
-        'aac', 'ac3', 'ec3', 'ts', 'vtt', 'ttml',
+        'aac', 'ac3', 'ec3', 'ts', 'vtt', 'ttml', 'ass'
     ]
 
     output_file_path = os.path.join(self.tmp_dir, output_file_name_base)
@@ -965,6 +965,13 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess(audio_video_streams + text_stream,
                               self._GetFlags(output_dash=True))
     self._CheckTestResults('video-audio-ttml')
+
+  def testVideoAudioAss(self):
+    audio_video_streams = self._GetStreams(['audio', 'video'])
+    text_stream = self._GetStreams(['text'], test_files=['bear-english.ass'])
+    self.assertPackageSuccess(audio_video_streams + text_stream,
+                              self._GetFlags(output_dash=True))
+    self._CheckTestResults('video-audio-ass')
 
   def testVideoNoEditList(self):
     stream = self._GetStream('video', test_file='bear-640x360-no_edit_list.mp4')

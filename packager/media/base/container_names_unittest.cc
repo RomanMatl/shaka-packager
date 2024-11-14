@@ -97,6 +97,8 @@ TEST(ContainerNamesTest, FromFormatName) {
   EXPECT_EQ(CONTAINER_MOV, DetermineContainerFromFormatName("cmfa"));
   EXPECT_EQ(CONTAINER_MOV, DetermineContainerFromFormatName("cmft"));
   EXPECT_EQ(CONTAINER_MOV, DetermineContainerFromFormatName("cmfv"));
+  EXPECT_EQ(CONTAINER_ASS, DetermineContainerFromFormatName("ass"));
+  EXPECT_EQ(CONTAINER_ASS, DetermineContainerFromFormatName("ssa"));
   EXPECT_EQ(CONTAINER_MPEG2TS, DetermineContainerFromFormatName("ts"));
   EXPECT_EQ(CONTAINER_MPEG2TS, DetermineContainerFromFormatName("mpeg2ts"));
   EXPECT_EQ(CONTAINER_UNKNOWN, DetermineContainerFromFormatName("cat"));
@@ -116,6 +118,8 @@ TEST(ContainerNamesTest, FromFileName) {
   EXPECT_EQ(CONTAINER_MOV, DetermineContainerFromFileName("foo.bar.MP4"));
   EXPECT_EQ(CONTAINER_MPEG2TS, DetermineContainerFromFileName("a.ts"));
   EXPECT_EQ(CONTAINER_MPEG2TS, DetermineContainerFromFileName("a.TS"));
+  EXPECT_EQ(CONTAINER_ASS, DetermineContainerFromFileName("file.ass"));
+  EXPECT_EQ(CONTAINER_ASS, DetermineContainerFromFileName("file.ssa"));
   EXPECT_EQ(CONTAINER_UNKNOWN, DetermineContainerFromFileName("a_bad.gif"));
   EXPECT_EQ(CONTAINER_UNKNOWN, DetermineContainerFromFileName("a bad.m4v-"));
   EXPECT_EQ(CONTAINER_UNKNOWN, DetermineContainerFromFileName("a.m4v."));

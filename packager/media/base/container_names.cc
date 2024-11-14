@@ -1767,6 +1767,9 @@ MediaContainerName DetermineContainerFromFormatName(
              // Treat xml as ttml.
              normalized_format_name == "xml") {
     return CONTAINER_TTML;
+  } else if (normalized_format_name == "ass" ||
+             normalized_format_name == "ssa") {
+    return CONTAINER_ASS;
   }
   return CONTAINER_UNKNOWN;
 }

@@ -109,6 +109,7 @@ set(libpackager_deps
   mp4
   packed_audio
   ttml
+  ass
   formats_webm
   wvm
   media_replicator
