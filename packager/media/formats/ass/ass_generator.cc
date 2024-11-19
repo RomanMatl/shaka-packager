@@ -78,58 +78,7 @@ void AssGenerator::Reset() {
 }
 
 bool AssGenerator::Dump(std::string* result) const {
-  xml::XmlNode root("tt");
-  bool ebuTTDFormat = isEbuTTTD();
-  RCHECK(root.SetStringAttribute("xmlns", kTtNamespace));
-  RCHECK(root.SetStringAttribute("xmlns:tts",
-                                 "http://www.w3.org/ns/ass#styling"));
-  RCHECK(root.SetStringAttribute("xmlns:tts",
-                                 "http://www.w3.org/ns/ass#styling"));
-  RCHECK(root.SetStringAttribute("xml:lang", language_));
-
-  if (ebuTTDFormat) {
-    RCHECK(root.SetStringAttribute("xmlns:ttp",
-                                   "http://www.w3.org/ns/ass#parameter"));
-    RCHECK(root.SetStringAttribute("xmlns:ttm",
-                                   "http://www.w3.org/ns/ass#metadata"));
-    RCHECK(root.SetStringAttribute("xmlns:ebuttm", "urn:ebu:tt:metadata"));
-    RCHECK(root.SetStringAttribute("xmlns:ebutts", "urn:ebu:tt:style"));
-    RCHECK(root.SetStringAttribute("xml:space", "default"));
-    RCHECK(root.SetStringAttribute("ttp:timeBase", "media"));
-    RCHECK(root.SetStringAttribute("ttp:cellResolution", "32 15"));
-  }
-
-  xml::XmlNode head("head");
-  xml::XmlNode styling("styling");
-  xml::XmlNode metadata("metadata");
-  xml::XmlNode layout("layout");
-  RCHECK(addRegions(layout));
-
-  xml::XmlNode body("body");
-  if (ebuTTDFormat) {
-    RCHECK(body.SetStringAttribute("style", "default"));
-  }
-  size_t image_count = 0;
-  std::unordered_set<std::string> fragmentStyles;
-  xml::XmlNode div("div");
-  for (const auto& sample : samples_) {
-    RCHECK(
-        AddSampleToXml(sample, &div, &metadata, fragmentStyles, &image_count));
-  }
-  if (image_count > 0) {
-    RCHECK(root.SetStringAttribute(
-        "xmlns:smpte", "http://www.smpte-ra.org/schemas/2052-1/2010/smpte-tt"));
-  }
-  RCHECK(body.AddChild(std::move(div)));
-  RCHECK(head.AddChild(std::move(metadata)));
-  RCHECK(addStyling(styling, fragmentStyles));
-  RCHECK(head.AddChild(std::move(styling)));
-  RCHECK(head.AddChild(std::move(layout)));
-  RCHECK(root.AddChild(std::move(head)));
-
-  RCHECK(root.AddChild(std::move(body)));
-
-  *result = root.ToString(/* comment= */ "");
+  // TODO validatate ASS content?
   return true;
 }
 

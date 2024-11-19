@@ -11,6 +11,8 @@ add_library(ass STATIC
   ass_muxer.h
   ass_parser.cc
   ass_parser.h
+  ass_passthrough_parser.cc
+  ass_passthrough_parser.h
   ass_to_mp4_handler.cc
   ass_to_mp4_handler.h
   )

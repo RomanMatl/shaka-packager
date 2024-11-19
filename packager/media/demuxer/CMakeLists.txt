@@ -12,6 +12,7 @@ target_link_libraries(demuxer
   mp2t
   mp4
   webvtt
+  ass
   wvm
   formats_webm
   media_origin)
