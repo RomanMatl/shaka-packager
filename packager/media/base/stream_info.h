@@ -64,6 +64,7 @@ enum Codec {
 
   kCodecText = 300,
   kCodecWebVtt = kCodecText,
+  kCodecAss = kCodecText,
   kCodecTtml,
 };
 

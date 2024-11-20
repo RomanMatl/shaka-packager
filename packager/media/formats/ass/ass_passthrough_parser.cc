@@ -36,9 +36,13 @@ void AssPassthroughParser::Init(const InitCB& init_cb,
 }
 
 bool AssPassthroughParser::Flush() {
-  if (!new_text_sample_cb_ || buffer_.empty()) {
-    LOG(WARNING) << "No data to flush.";
+  if (!new_text_sample_cb_) {
+    LOG(WARNING) << "new_text_sample_cb not initialized properly.";
     return false;
+  }
+  if (buffer_.empty()) {
+    LOG(WARNING) << "No data to flush.";
+    return true;
   }
 
   // Create a TextSample with the entire file as its body.
@@ -56,19 +60,50 @@ bool AssPassthroughParser::Flush() {
     return false;
   }
 
-  buffer_.clear();
+  //buffer_.clear();
   return true;
 }
 
 bool AssPassthroughParser::Parse(const uint8_t* buf, int size) {
   if (!buf || size <= 0) {
     LOG(ERROR) << "Invalid buffer data.";
-    return false;
+    return true;
   }
 
   // Append the new data to the internal buffer.
   buffer_.insert(buffer_.end(), buf, buf + size);
+  if (!stream_info_dispatched_) {  
+    DispatchTextStreamInfo();
+  }
+
   return true;
+}
+
+void AssPassthroughParser::DispatchTextStreamInfo() {
+  stream_info_dispatched_ = true;
+
+  const int kTrackId = 0;
+  // The resolution of timings are in milliseconds.
+  const int kTimescale = 1000;
+  // The duration passed here is not very important. Also the whole file
+  // must be read before determining the real duration which doesn't
+  // work nicely with the current demuxer.
+  const int kDuration = 0;
+  const char kWebCodecString[] = "ass";
+  const int64_t kNoWidth = 0;
+  const int64_t kNoHeight = 0;
+  // The language of the stream will be overwritten by the Demuxer later.
+  const char kNoLanguage[] = "";
+
+  const auto stream = std::make_shared<TextStreamInfo>(
+      kTrackId, kTimescale, kDuration, kCodecAss, kWebCodecString, "",
+      kNoWidth, kNoHeight, kNoLanguage);
+  stream->set_css_styles(css_styles_);
+  //for (const auto& pair : regions_)
+  //  stream->AddRegion(pair.first, pair.second);
+
+  std::vector<std::shared_ptr<StreamInfo>> streams{stream};
+  init_cb_(streams);
 }
 
 }  // namespace media

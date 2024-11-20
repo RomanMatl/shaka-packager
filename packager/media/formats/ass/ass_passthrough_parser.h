@@ -7,8 +7,13 @@
 #ifndef PACKAGER_MEDIA_FORMATS_ASS_ASS_PASSTHROUGH_PARSER_H_
 #define PACKAGER_MEDIA_FORMATS_ASS_ASS_PASSTHROUGH_PARSER_H_
 
+#include <map>
+
 #include <packager/media/base/media_parser.h>
+
 #include <packager/media/base/text_sample.h>
+#include <packager/media/base/text_stream_info.h>
+#include <packager/media/formats/webvtt/text_readers.h>
 
 namespace shaka {
 namespace media {
@@ -34,6 +39,10 @@ class AssPassthroughParser : public MediaParser {
 
   // Callback for passing the entire file downstream.
   NewTextSampleCB new_text_sample_cb_;
+  void DispatchTextStreamInfo();
+  bool stream_info_dispatched_ = false;
+  std::string css_styles_ = "";
+  std::map<std::string, TextRegion> regions_;
 };
 
 }  // namespace media
