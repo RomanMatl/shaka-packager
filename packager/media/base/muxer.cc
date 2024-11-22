@@ -48,6 +48,9 @@ void Muxer::SetProgressListener(
 Status Muxer::Process(std::unique_ptr<StreamData> stream_data) {
   Status status;
   switch (stream_data->stream_data_type) {
+    case StreamDataType::kWholeFile:
+      RETURN_IF_ERROR(Finalize());
+      break;
     case StreamDataType::kStreamInfo:
       streams_.push_back(std::move(stream_data->stream_info));
       return ReinitializeMuxer(kStartTime);

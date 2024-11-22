@@ -25,6 +25,9 @@ class AssMuxer : public TextMuxer {
   Status WriteToFile(const std::string& filename, uint64_t* size) override;
 
   AssGenerator generator_;
+  // Buffers the entire file data.
+  std::string whole_file;
+  std::string output_file_name_;
 };
 
 }  // namespace ass

@@ -110,6 +110,11 @@ bool DetermineTextFileCodec(const std::string& file, std::string* out) {
     return true;
   }
 
+  if (container_name == CONTAINER_ASS) {
+    *out = "ass";
+    return true;
+  }
+
   return false;
 }
 
@@ -590,6 +595,58 @@ Status CreateTtmlJobs(
   return Status::OK;
 }
 
+Status CreateAssJobs(
+    const std::vector<std::reference_wrapper<const StreamDescriptor>>& streams,
+    const PackagingParams& packaging_params,
+    SyncPointQueue* sync_points,
+    MuxerFactory* muxer_factory,
+    MpdNotifier* mpd_notifier,
+    JobManager* job_manager) {
+  DCHECK(job_manager);
+  for (const StreamDescriptor& stream : streams) {
+    // Check input to ensure that output is possible.
+    if (GetOutputFormat(stream) != CONTAINER_ASS) {
+      return Status(error::INVALID_ARGUMENT,
+                    "Converting ASS to other formats is not supported");
+    }
+
+    if (!stream.output.empty()) {
+      if (!File::Copy(stream.input.c_str(), stream.output.c_str())) {
+        std::string error;
+        absl::StrAppendFormat(
+            &error, "Failed to copy the input file (%s) to output file (%s).",
+            stream.input.c_str(), stream.output.c_str());
+        return Status(error::FILE_FAILURE, error);
+      }
+
+      MediaInfo text_media_info;
+      if (!StreamInfoToTextMediaInfo(stream, &text_media_info)) {
+        return Status(error::INVALID_ARGUMENT,
+                      "Could not create media info for stream.");
+      }
+
+      // If we are outputting to MPD, just add the input to the outputted
+      // manifest.
+      if (mpd_notifier) {
+        uint32_t unused;
+        if (mpd_notifier->NotifyNewContainer(text_media_info, &unused)) {
+          mpd_notifier->Flush();
+        } else {
+          return Status(error::PARSER_FAILURE,
+                        "Failed to process text file " + stream.input);
+        }
+      }
+
+      if (packaging_params.output_media_info) {
+        VodMediaInfoDumpMuxerListener::WriteMediaInfoToFile(
+            text_media_info, stream.output + kMediaInfoSuffix);
+      }
+    }
+  }
+
+  return Status::OK;
+}
+
 Status CreateAudioVideoJobs(
     const std::vector<std::reference_wrapper<const StreamDescriptor>>& streams,
     const PackagingParams& packaging_params,
@@ -743,6 +800,7 @@ Status CreateAllJobs(const std::vector<StreamDescriptor>& stream_descriptors,
 
   // Group all streams based on which pipeline they will use.
   std::vector<std::reference_wrapper<const StreamDescriptor>> ttml_streams;
+  std::vector<std::reference_wrapper<const StreamDescriptor>> ass_streams;
   std::vector<std::reference_wrapper<const StreamDescriptor>>
       audio_video_streams;
 
@@ -754,6 +812,8 @@ Status CreateAllJobs(const std::vector<StreamDescriptor>& stream_descriptors,
     const auto output_format = GetOutputFormat(stream);
     if (input_container == CONTAINER_TTML) {
       ttml_streams.push_back(stream);
+    } else if (input_container == CONTAINER_ASS) {
+      ass_streams.push_back(stream);
     } else {
       audio_video_streams.push_back(stream);
       switch (output_format) {
@@ -791,7 +851,8 @@ Status CreateAllJobs(const std::vector<StreamDescriptor>& stream_descriptors,
       muxer_factory->SetTsStreamOffset(0);
     }
   }
-
+  RETURN_IF_ERROR(CreateAssJobs(ass_streams, packaging_params, sync_points,
+                                 muxer_factory, mpd_notifier, job_manager));
   RETURN_IF_ERROR(CreateTtmlJobs(ttml_streams, packaging_params, sync_points,
                                  muxer_factory, mpd_notifier, job_manager));
   RETURN_IF_ERROR(CreateAudioVideoJobs(

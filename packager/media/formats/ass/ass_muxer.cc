@@ -17,26 +17,23 @@ AssMuxer::AssMuxer(const MuxerOptions& options) : TextMuxer(options) {}
 AssMuxer::~AssMuxer() {}
 
 Status AssMuxer::InitializeStream(TextStreamInfo* stream) {
-  stream->set_codec(kCodecTtml);
-  stream->set_codec_string("ttml");
+  stream->set_codec(kCodecAss);
+  stream->set_codec_string("ass");
   generator_.Initialize(stream->regions(), stream->language(),
                         stream->time_scale());
+  //output_file_name_ = stream->output_file_name;
   return Status::OK;
 }
 
 Status AssMuxer::AddTextSampleInternal(const TextSample& sample) {
-  generator_.AddSample(sample);
+  AssMuxer::whole_file = sample.body().body;
+  //generator_.AddSample(sample);
   return Status::OK;
 }
 
 Status AssMuxer::WriteToFile(const std::string& filename, uint64_t* size) {
-  std::string data;
-  if (!generator_.Dump(&data))
-    return Status(error::INTERNAL_ERROR, "Error generating XML");
-  generator_.Reset();
-  *size = data.size();
-
-  if (!File::WriteStringToFile(filename.c_str(), data))
+  * size = whole_file.size();
+  if (!File::WriteStringToFile(filename.c_str(), whole_file))
     return Status(error::FILE_FAILURE, "Failed to write " + filename);
   return Status::OK;
 }

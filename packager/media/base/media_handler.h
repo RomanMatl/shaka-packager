@@ -27,6 +27,7 @@ enum class StreamDataType {
   kSegmentInfo,
   kScte35Event,
   kCueEvent,
+  kWholeFile
 };
 
 std::string StreamDataTypeToString(StreamDataType type);

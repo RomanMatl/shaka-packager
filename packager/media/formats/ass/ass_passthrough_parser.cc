@@ -60,6 +60,8 @@ bool AssPassthroughParser::Flush() {
     return false;
   }
 
+  new_text_sample_cb_(3, sample);
+
   //buffer_.clear();
   return true;
 }

@@ -574,6 +574,14 @@ std::string Representation::GetTextMimeType() const {
                << media_info_.container_type();
     return "";
   }
+  if (media_info_.text_info().codec() == "ass") {
+    if (media_info_.container_type() == MediaInfo::CONTAINER_TEXT) {
+      return "text/x-ssa";
+    }
+    LOG(ERROR) << "Failed to determine MIME type for ASS container: "
+               << media_info_.container_type();
+    return "";
+  }
 
   LOG(ERROR) << "Cannot determine MIME type for format: "
              << media_info_.text_info().codec()
